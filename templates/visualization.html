@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Molecular Visualization</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e0e7ff, #f3e8ff);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin: 1rem;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1e3a8a;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+        }
+
+        #viewer {
+            width: 100%;
+            height: 400px;
+            position: relative;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        button {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 6px;
+            background: #3b82f6;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        button:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .back-link {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: #10b981;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: background 0.3s, transform 0.2s;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .back-link:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .error {
+            text-align: center;
+            padding: 1rem;
+            background: #fee2e2;
+            color: #dc3545;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            #viewer {
+                height: 300px;
+            }
+
+            button, .back-link {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+    <script src="https://3dmol.csb.pitt.edu/build/3Dmol-min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Molecular Visualization</h1>
+        <div id="viewer"></div>
+        <div class="controls">
+            <button onclick="toggleRotation()">Toggle Rotation</button>
+            <button onclick="zoomIn()">Zoom In</button>
+            <button onclick="zoomOut()">Zoom Out</button>
+            <button onclick="toggleStyle()">Toggle Style</button>
+        </div>
+        <a href="{{ url_for('upload.index') }}" class="back-link">Back to Upload</a>
+
+        {% if not pdb_url %}
+            <div class="error">No PDB file specified.</div>
+        {% endif %}
+    </div>
+
+    <script>
+        let element = document.getElementById('viewer');
+        let config = { backgroundColor: 'white' };
+        let viewer = $3Dmol.createViewer(element, config);
+        let isRotating = false;
+        let isCartoon = true;
+
+        const pdbUrl = "{{ pdb_url | safe }}";
+
+        if (pdbUrl) {
+            fetch(pdbUrl)
+                .then(response => response.text())
+                .then(data => {
+                    viewer.addModel(data, 'pdb');
+                    applyStyle();
+                    viewer.zoomTo();
+                    viewer.render();
+                })
+                .catch(error => {
+                    console.error('Error loading PDB file:', error);
+                    element.innerHTML = '<p class="error">Failed to load molecular visualization.</p>';
+                });
+        }
+
+        function applyStyle() {
+            if (isCartoon) {
+                viewer.setStyle({ hetflag: false }, { cartoon: { color: 'spectrum' } });
+                viewer.setStyle({ hetflag: true }, { stick: { colorscheme: 'whiteCarbon', radius: 0.2 } });
+            } else {
+                viewer.setStyle({}, { stick: { colorscheme: 'greenCarbon', radius: 0.2 } });
+            }
+            viewer.render();
+        }
+
+        function toggleRotation() {
+            isRotating = !isRotating;
+            if (isRotating) {
+                viewer.spin(true);
+            } else {
+                viewer.spin(false);
+            }
+        }
+
+        function zoomIn() {
+            viewer.zoom(1.2);
+        }
+
+        function zoomOut() {
+            viewer.zoom(0.8);
+        }
+
+        function toggleStyle() {
+            isCartoon = !isCartoon;
+            applyStyle();
+        }
+    </script>
+</body>
+</html>

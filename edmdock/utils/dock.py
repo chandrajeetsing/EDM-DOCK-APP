@@ -12,7 +12,7 @@ from simtk.openmm.app import PDBFile, Simulation, Modeller
 from openmmforcefields.generators import SystemGenerator
 
 
-DGSOL = '/data/masters/projects/EDM-Dock/DGSOL/build/src/dgsol_s/dgsol_s'
+DGSOL = '/home/vishwajit/Downloads/docking_project/EDM-Dock/DGSOL/build/src/dgsol_s/dgsol_s'
 K_UNIT = unit.kilojoule_per_mole / unit.angstrom ** 2
 
 

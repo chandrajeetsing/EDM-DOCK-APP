@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docking Web App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-image: url('https://media.assettype.com/knocksense%2F2023-05%2Fc95bc573-e660-4b17-8c5c-7661cf8a8c67%2Fbuilding.png?w=1200&auto=format%2Ccompress&fit=max');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-color: #e0e7ff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 1;
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin: 1rem;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1e3a8a;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+        }
+
+        .upload-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        input[type="file"] {
+            padding: 0.5rem;
+            border: 2px solid #d1d5db;
+            border-radius: 6px;
+            background: #f9fafb;
+            transition: border-color 0.3s;
+        }
+
+        input[type="file"]:hover {
+            border-color: #3b82f6;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        button, .reset-button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        button {
+            background: #3b82f6;
+            color: white;
+        }
+
+        button:hover:not(:disabled) {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            background: #93c5fd;
+            cursor: not-allowed;
+        }
+
+        .reset-button {
+            background: #ef4444;
+            color: white;
+        }
+
+        .reset-button:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        .result-message {
+            text-align: center;
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 6px;
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #dc3545;
+        }
+
+        .download-link, .visualization-link {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: background 0.3s, transform 0.2s;
+            margin: 0.5rem;
+            text-align: center;
+        }
+
+        .download-link {
+            background: #10b981;
+            color: white;
+        }
+
+        .download-link:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .visualization-link {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        .visualization-link:hover {
+            background: #7c3aed;
+            transform: translateY(-2px);
+        }
+
+        .loader {
+            display: none;
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin: 1rem auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            button, .reset-button, .download-link, .visualization-link {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Logo styling */
+        .logo-left, .logo-right {
+            position: fixed;
+            top: 1rem;
+            z-index: 3;
+            width: 100px;
+            height: auto;
+        }
+
+        .logo-left {
+            left: 1rem;
+        }
+
+        .logo-right {
+            right: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <img src="https://upload.wikimedia.org/wikipedia/en/thumb/1/19/IIT_Hyderabad_Insignia.svg/250px-IIT_Hyderabad_Insignia.svg.png" alt="IIT Hyderabad Logo" class="logo-left">
+    <img src="/static/photo.jpg" alt="Right Logo" class="logo-right">
+    <div class="container">
+        <h1>Molecular Docking Interface</h1>
+        <form id="upload-form" class="upload-form" method="post" action="{{ url_for('upload.upload_files') }}" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="protein">Protein Structure (.pdb)</label>
+                <input type="file" id="protein" name="protein" accept=".pdb" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="ligand">Ligand Molecule (.sdf)</label>
+                <input type="file" id="ligand" name="ligand" accept=".sdf" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="box">Binding Site Coordinates (.csv)</label>
+                <input type="file" id="box" name="box" accept=".csv" required>
+            </div>
+            
+            <div class="button-group">
+                <button type="submit" id="submit-btn">Run Docking Simulation</button>
+                <button type="button" class="reset-button" onclick="resetForm()">Reset</button>
+            </div>
+        </form>
+
+        <div id="loader" class="loader"></div>
+
+        {% if output_message %}
+            <div class="result-message {% if 'Error' in output_message %}error{% endif %}">
+                {{ output_message|safe }}
+            </div>
+        {% endif %}
+
+        {% if pdb_url %}
+            <a href="{{ url_for('upload.visualization', pdb=pdb_url) }}" class="visualization-link">View Molecular Visualization</a>
+        {% endif %}
+    </div>
+
+    <script>
+        const form = document.getElementById('upload-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const loader = document.getElementById('loader');
+
+        form.addEventListener('submit', () => {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Processing...';
+            loader.style.display = 'block';
+        });
+
+        function resetForm() {
+            form.reset();
+            fetch('{{ url_for("upload.index") }}', { method: 'GET' })
+                .then(() => {
+                    document.querySelector('.result-message')?.remove();
+                    document.querySelector('.visualization-link')?.remove();
+                });
+        }
+    </script>
+</body>
+</html>
