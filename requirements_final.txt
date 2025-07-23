@@ -1,7 +1,7 @@
 aiohttp==3.8.3
 aiosignal==1.3.1
-AmberLite==22.0
-AmberUtils==21.0
+# AmberLite==22.0
+# AmberUtils==21.0
 argon2-cffi
 argon2-cffi-bindings
 asttokens
@@ -71,7 +71,7 @@ matplotlib
 matplotlib-inline
 mdtraj
 mistune
-MMPBSA.py==16.0
+# MMPBSA.py==16.0
 msgpack
 multidict==6.0.3
 nbclient
@@ -93,7 +93,7 @@ pandas==1.4.3
 pandocfilters
 ParmEd
 parso
-pdb4amber==22.0
+# pdb4amber==22.0
 pdbfixer
 pexpect
 pickleshare
@@ -112,7 +112,7 @@ py
 pycairo==1.22.0
 pycparser
 Pygments
-pyMSMT==22.0
+# pyMSMT==22.0
 pyOpenSSL
 pyparsing
 PyQt5==5.15.7
@@ -131,7 +131,7 @@ qtconsole
 QtPy
 reportlab==3.5.68
 requests
-sander==22.0
+# sander==22.0
 scikit-learn
 scipy==1.9.3
 selenium
