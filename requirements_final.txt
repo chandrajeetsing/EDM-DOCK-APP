@@ -30,7 +30,7 @@ debugpy
 decorator
 defusedxml
 easydict==1.10
-EDM-Dock==1.0
+# EDM-Dock==1.0
 einops==0.6.0
 entrypoints
 exceptiongroup
