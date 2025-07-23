@@ -1,0 +1,3 @@
+[submodule "DGSOL"]
+	path = DGSOL
+	url = https://github.com/MatthewMasters/DGSOL
